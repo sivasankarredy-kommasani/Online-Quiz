@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Online Quiz</title>
+<style>
+body{text-align:center;font-family:Arial;background:lightblue}
+.box{background:white;padding:20px;margin:50px auto;width:300px;border-radius:10px}
+button{padding:8px;margin:10px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Online Quiz</h2>
+<input id="user" placeholder="Username">
+<button onclick="start()">Login</button>
+<p id="q"></p>
+<div id="opts"></div>
+<button id="next" onclick="check()" hidden>Next</button>
+<p id="result"></p>
+<p id="high"></p>
+</div>
+
+<script>
+let data=[
+["HTML stands for?",["Hyper Text Markup Language","High Text"],0],
+["Programming language?",["CSS","JavaScript"],1],
+["CSS is used for?",["Styling","Database"],0]
+],i=0,s=0,u;
+
+function start(){
+u=document.getElementById("user").value.trim();
+if(!u)return alert("Enter username");
+document.getElementById("user").hidden=true;
+document.querySelector("button").hidden=true;
+show();
+}
+
+function show(){
+q.innerText=data[i][0];
+opts.innerHTML=data[i][1].map((x,n)=>
+`<label><input type="radio" name="a" value="${n}">${x}</label><br>`).join("");
+next.hidden=false;
+next.innerText=i==data.length-1?"Submit":"Next";
+}
+
+function check(){
+let a=document.querySelector('input[name="a"]:checked');
+if(!a)return alert("Select an answer");
+if(+a.value==data[i][2])s++;
+if(++i<data.length)show();
+else{
+let d=JSON.parse(localStorage.getItem("scores")||"{}");
+d[u]=Math.max(d[u]||0,s);
+localStorage.setItem("scores",JSON.stringify(d));
+q.innerText="Quiz Completed!";
+opts.innerHTML="";
+result.innerText=u+"'s Score: "+s+"/"+data.length;
+high.innerText="Highest Score: "+Math.max(...Object.values(d))+"/"+data.length;
+next.hidden=true;
+}
+}
+</script>
+</body>
+</html>
